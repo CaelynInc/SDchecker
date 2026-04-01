@@ -61,7 +61,7 @@ if (-not $isccPath) {
 }
 
 if ($isccPath) {
-    $initPy = Join-Path $projectRoot "sentinel" "__init__.py"
+    $initPy = Join-Path (Join-Path $projectRoot "sentinel") "__init__.py"
     $issPath = Join-Path $projectRoot "installer.iss"
     if (Test-Path $initPy) {
         $line = Get-Content $initPy | Where-Object { $_ -match '__version__\s*=\s*"([^"]+)"' }
@@ -73,7 +73,7 @@ if ($isccPath) {
     Write-Host "Building installer..."
     & $isccPath $issPath
     if ($LASTEXITCODE -eq 0) {
-        $installer = Join-Path $projectRoot "Output" "Sentinel_Setup.exe"
+        $installer = Join-Path (Join-Path $projectRoot "Output") "Sentinel_Setup.exe"
         if (Test-Path $installer) {
             Write-Host "Installer complete: $installer"
         }
