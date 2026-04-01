@@ -1,6 +1,6 @@
-# Build Sentinel Phase 2+ standalone .exe and installer
-# Run from sentinel-phase2: .\build_installer.ps1
-# Requires: Python, PyInstaller, Inno Setup (optional, for installer)
+# Build Sentinel standalone .exe and (optionally) installer
+# Run from project root: .\build_installer.ps1
+# Requires: Python, PyInstaller. If Inno Setup (iscc) is available, also builds installer.
 
 $ErrorActionPreference = "Stop"
 $projectRoot = $PSScriptRoot
