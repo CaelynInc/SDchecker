@@ -15,7 +15,7 @@ from sentinel.core import (
     WRITE_CHUNK_BYTES,
     _hash_file_chunked,
 )
-from sentinel.drive import get_drive_usage
+from sentinel.drive import get_drive_identity, get_drive_usage
 
 SENTINEL_DIR = "Sentinel"
 LAST_SWEEP_FILE = ".last_sweep"
@@ -23,12 +23,12 @@ TEMP_DIR_PREFIX = "SentinelSweep"
 
 
 def _manifest_path(drive_root: str) -> Path:
-    """Path to manifest file on PC (per drive)."""
+    """Path to manifest file on PC (per physical card/volume identity)."""
     base = _get_config_path().parent
-    letter = drive_root.replace("\\", "").replace(":", "").upper() or "UNKNOWN"
+    drive_id = get_drive_identity(drive_root)
     base = base / "manifests"
     base.mkdir(parents=True, exist_ok=True)
-    return base / f"{letter}.json"
+    return base / f"{drive_id}.json"
 
 
 def _sentinel_path(drive_root: str) -> Path:

@@ -391,7 +391,7 @@ class SentinelUI:
         self._load_drives_and_config()
 
     def _set_buttons_enabled(self, enabled: bool):
-        state = [] if enabled else ["disabled"]
+        state = ["!disabled"] if enabled else ["disabled"]
         self.run_btn.state(state)
         self.sweep_btn.state(state)
         self.refresh_btn.state(state)
