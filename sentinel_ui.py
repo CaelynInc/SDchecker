@@ -34,8 +34,12 @@ class SentinelUI:
         self._verification_details_text = ""
         self._abort_requested = False
 
-        # Show EULA first; main UI is built after user agrees
-        self._build_eula_screen()
+        # Show EULA only until first acceptance; then go straight to main UI.
+        config = load_config()
+        if config.get("eula_accepted", False):
+            self._initialize_main_ui()
+        else:
+            self._build_eula_screen()
 
     def _build_eula_screen(self):
         """Show EULA; user must scroll to bottom and click I Agree to continue."""
@@ -110,10 +114,15 @@ class SentinelUI:
 
     def _on_eula_agree(self):
         """User agreed to EULA; show main app."""
+        save_config(eula_accepted=True)
         self._eula_frame.destroy()
         del self._eula_frame
         del self._eula_text
         del self._eula_agree_btn
+        self._initialize_main_ui()
+
+    def _initialize_main_ui(self):
+        """Build and initialize the main app UI."""
         self._build_ui()
         self._load_drives_and_config()
         self.interval_combo.bind("<<ComboboxSelected>>", self._on_interval_change)
@@ -177,6 +186,10 @@ class SentinelUI:
             btn_frame, text="Abort", command=self._on_abort_click, state="disabled"
         )
         self.abort_btn.pack(side=tk.LEFT)
+        self.refresh_btn = ttk.Button(
+            btn_frame, text="Refresh app", command=self._on_refresh_click
+        )
+        self.refresh_btn.pack(side=tk.LEFT, padx=(10, 0))
 
         # Progress
         self.progress_label = ttk.Label(main, textvariable=self.progress_var)
@@ -212,6 +225,9 @@ class SentinelUI:
             self.run_btn.state(["disabled"])
             self.sweep_btn.state(["disabled"])
             return
+        if not self.operation_running:
+            self.run_btn.state(["!disabled"])
+            self.sweep_btn.state(["!disabled"])
         config = load_config()
         last = config.get("last_drive")
         if last and last in drives:
@@ -363,10 +379,22 @@ class SentinelUI:
             return
         self._start_full_sweep(drive)
 
+    def _on_refresh_click(self):
+        if self.operation_running:
+            return
+        self._abort_requested = False
+        self._verification_details_text = ""
+        self.result_var.set("—")
+        self.result_label.configure(foreground="")
+        self.progress_var.set("")
+        self.progress_bar["value"] = 0
+        self._load_drives_and_config()
+
     def _set_buttons_enabled(self, enabled: bool):
         state = [] if enabled else ["disabled"]
         self.run_btn.state(state)
         self.sweep_btn.state(state)
+        self.refresh_btn.state(state)
         self.abort_btn.state(["disabled"] if enabled else ["!disabled"])
 
     def _start_quick_check(self, drive: str, size_frac: float):
@@ -404,7 +432,7 @@ class SentinelUI:
                         self.progress_var.set(message)
                 else:
                     self.progress_var.set(message)
-                self.root.after(0, update)
+            self.root.after(0, update)
 
         def run():
             result = quick_check(

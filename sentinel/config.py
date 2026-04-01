@@ -26,7 +26,8 @@ def load_config() -> dict:
     """
     Load config from JSON file.
     Returns dict with keys: last_drive, check_size_fraction, sweep_interval_days,
-    last_check_time (iso str or None), last_sweep_time (iso str or None, fallback when not on card).
+    last_check_time (iso str or None), last_sweep_time (iso str or None, fallback when not on card),
+    eula_accepted (bool).
     """
     config_path = _get_config_path()
     if not config_path.exists():
@@ -36,6 +37,7 @@ def load_config() -> dict:
             "sweep_interval_days": _DEFAULT_SWEEP_INTERVAL_DAYS,
             "last_check_time": None,
             "last_sweep_time": None,
+            "eula_accepted": False,
         }
     try:
         with open(config_path, encoding="utf-8") as f:
@@ -46,6 +48,7 @@ def load_config() -> dict:
             "sweep_interval_days": data.get("sweep_interval_days", _DEFAULT_SWEEP_INTERVAL_DAYS),
             "last_check_time": data.get("last_check_time"),
             "last_sweep_time": data.get("last_sweep_time"),
+            "eula_accepted": bool(data.get("eula_accepted", False)),
         }
     except (json.JSONDecodeError, OSError):
         return {
@@ -54,6 +57,7 @@ def load_config() -> dict:
             "sweep_interval_days": _DEFAULT_SWEEP_INTERVAL_DAYS,
             "last_check_time": None,
             "last_sweep_time": None,
+            "eula_accepted": False,
         }
 
 
@@ -63,6 +67,7 @@ def save_config(
     sweep_interval_days: int | None = None,
     last_check_time: str | None = None,
     last_sweep_time: str | None = None,
+    eula_accepted: bool | None = None,
 ) -> None:
     """
     Save config to JSON file.
@@ -80,5 +85,7 @@ def save_config(
         current["last_check_time"] = last_check_time
     if last_sweep_time is not None:
         current["last_sweep_time"] = last_sweep_time
+    if eula_accepted is not None:
+        current["eula_accepted"] = eula_accepted
     with open(config_path, "w", encoding="utf-8") as f:
         json.dump(current, f, indent=2)

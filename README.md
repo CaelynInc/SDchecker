@@ -10,7 +10,7 @@
 2. Run the installer and follow the steps.
 3. Launch **Sentinel** from the Start Menu or desktop.
 
-No Python or extra runtimes required. You will be asked to accept the End-User License Agreement (EULA) and Terms of Use each time you start Sentinel.
+No Python or extra runtimes required. You will be asked to accept the End-User License Agreement (EULA) and Terms of Use on first launch after install.
 
 ---
 

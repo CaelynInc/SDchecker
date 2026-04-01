@@ -1,4 +1,4 @@
-"""Sentinel EULA & Terms of Use — shown at every launch."""
+"""Sentinel EULA & Terms of Use — shown on first launch."""
 
 EULA_TEXT = r"""Sentinel End-User License Agreement (EULA) & Terms of Use
 Version 1.0
@@ -24,7 +24,7 @@ II. END-USER LICENSE AGREEMENT (EULA)
 Phalanx Software Labs ("Licensor") grants a personal, non-exclusive, and limited license to use Sentinel ("Software") solely for personal, non-commercial hardware testing.
 
 2. Acceptance of Terms
-By clicking "I Agree" or by using the Software, you acknowledge that you have read and agree to these terms. You are required to manifest assent to these terms upon every launch.
+By clicking "I Agree" or by using the Software, you acknowledge that you have read and agree to these terms. You are required to manifest assent to these terms on first launch after install.
 
 3. Restrictions
 No Redistribution: You may not redistribute or sell the Software.
