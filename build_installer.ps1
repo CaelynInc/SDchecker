@@ -43,9 +43,24 @@ if (Test-Path $exe) {
     exit 1
 }
 
-# Inno Setup installer (if iscc is in PATH). Version is synced from sentinel/__init__.py.
-$iscc = Get-Command iscc -ErrorAction SilentlyContinue
-if ($iscc) {
+# Inno Setup installer. Prefer PATH, then fall back to default install paths.
+# Version is synced from sentinel/__init__.py.
+$isccCmd = Get-Command iscc -ErrorAction SilentlyContinue
+$isccPath = if ($isccCmd) { $isccCmd.Source } else { $null }
+if (-not $isccPath) {
+    $candidates = @(
+        "C:\Program Files (x86)\Inno Setup 6\ISCC.exe",
+        "C:\Program Files\Inno Setup 6\ISCC.exe"
+    )
+    foreach ($candidate in $candidates) {
+        if (Test-Path $candidate) {
+            $isccPath = $candidate
+            break
+        }
+    }
+}
+
+if ($isccPath) {
     $initPy = Join-Path $projectRoot "sentinel" "__init__.py"
     $issPath = Join-Path $projectRoot "installer.iss"
     if (Test-Path $initPy) {
@@ -56,7 +71,7 @@ if ($iscc) {
         }
     }
     Write-Host "Building installer..."
-    & iscc $issPath
+    & $isccPath $issPath
     if ($LASTEXITCODE -eq 0) {
         $installer = Join-Path $projectRoot "Output" "Sentinel_Setup.exe"
         if (Test-Path $installer) {
